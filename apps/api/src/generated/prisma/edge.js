@@ -280,7 +280,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/nexxus/Purwadhika/real-mini-project/api/src/generated/prisma",
+      "value": "/home/nexxus/Purwadhika/mini-project/apps/api/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -294,7 +294,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/nexxus/Purwadhika/real-mini-project/api/prisma/schema.prisma",
+    "sourceFilePath": "/home/nexxus/Purwadhika/mini-project/apps/api/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -308,7 +308,6 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

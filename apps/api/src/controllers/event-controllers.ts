@@ -24,12 +24,11 @@ export async function getAllEvents(req: Request, res: Response) {
 
 export async function createOneEvents(req: Request, res: Response) {
   try {
-    const { userId, title, description, location, startDate, endDate } =
-      req.body;
+    const { title, description, location, startDate, endDate } = req.body;
     const files = req.files as {
       [key: string]: Express.Multer.File[];
     };
-    const eventId = req.user.id;
+    const userId = req.user.id;
 
     if (
       !title ||

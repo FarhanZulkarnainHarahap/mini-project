@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "../generated/prisma/index.js"
+import { PrismaClient } from "../generated/prisma/index.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ZodError } from "zod";
-import { Resend } from "resend"
-import fs from "fs/promises"
-import  handlebars  from "handlebars"
+import { Resend } from "resend";
+import fs from "fs/promises";
+import handlebars from "handlebars";
 
 import { registerSchema } from "../validations/auth-validation.js";
 
@@ -15,31 +15,45 @@ const prisma = new PrismaClient();
 
 export async function register(req: Request, res: Response) {
   try {
-    const  {email, firstName, lastName, username, password } = registerSchema.parse(req.body);
+    const { email, firstName, lastName, username, password, phoneNumber } =
+      registerSchema.parse(req.body);
 
     // Hashing password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     await prisma.user.create({
-      data: { email, firstName, lastName, username, password: hashedPassword },
+      data: {
+        email,
+        firstName,
+        lastName,
+        username,
+        password: hashedPassword,
+        phoneNumber,
+      },
     });
 
-
-    const tamplateSource = await fs.readFile("src/templates/registration-welcoming-template.hbs", "utf-8");
+    const tamplateSource = await fs.readFile(
+      "src/templates/registration-welcoming-template.hbs",
+      "utf-8"
+    );
     const compiledTemplate = handlebars.compile(tamplateSource.toString());
-    const htmlTemplate = compiledTemplate({customerName: name})
+    const htmlTemplate = compiledTemplate({ customerName: firstName });
 
     const { error: resendError } = await resend.emails.send({
       from: "NexTime <cs@resend.dev>",
       to: [email],
       subject: "Welcoming",
       html: htmlTemplate,
-    })
+    });
 
     if (resendError) {
-      res.status(400).json({message: "Registration Succes but failed to send email"})
+      res
+        .status(400)
+        .json({ message: "Registration Succes but failed to send email" });
+      return;
     }
+
     res.status(201).json({ message: "Registration success" });
   } catch (error) {
     console.error(error);
