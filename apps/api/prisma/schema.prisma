@@ -1,0 +1,216 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ORGANIZER
+  ADMIN
+}
+
+enum CategoryRole {
+  THEATER
+  SPORTS
+  ACADEMY
+  CONCERNT
+  TRAVEL
+}
+
+enum TicketRole {
+  REGULAR
+  VIP
+  VVIP
+}
+
+enum StatusRole {
+  AVAILABLE
+  REDEEMED
+  EXPIRED
+}
+
+enum StatusPaid {
+  SUCCESS
+  PENDING
+  FAILED
+}
+
+model User {
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  username    String   @unique
+  password    String
+  phoneNumber String?  @unique
+  role        Role     @default(USER)
+  createdAt   DateTime @default(now())
+
+  Event        Event[]
+  Ticket       Ticket[]
+  Transaction  Transaction[]
+  Review       Review[]
+  ReferralCode ReferralCode?
+  Point        Point[]
+}
+
+model Point {
+  id        String   @id @default(uuid())
+  amount    Int
+  userId    String
+  expiredAt DateTime
+  createAt  DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id])
+}
+
+model ReferralCode {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  code      String   @unique
+  createdAt DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id])
+}
+
+model Category {
+  id        String       @id @default(uuid())
+  name      CategoryRole
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  EventCategory EventCategory[]
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  description String
+  location    String
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime @default(now())
+
+  User User @relation(fields: [userId], references: [id])
+
+  EventCategory EventCategory[]
+  Voucher       Voucher[]
+  Transaction   Transaction[]
+  Review        Review[]
+  EventImage    EventImage[]
+  Discount      Discount[]
+  Ticket        Ticket[]
+}
+
+model EventCategory {
+  id         String   @id @default(uuid())
+  eventId    String
+  categoryId String
+  createdAt  DateTime @default(now())
+
+  Category Category @relation(fields: [categoryId], references: [id])
+  Event    Event    @relation(fields: [eventId], references: [id])
+}
+
+model EventImage {
+  id             String   @id @default(uuid())
+  eventId        String
+  imagePreviewId String?
+  imageContentId String?
+  createdAt      DateTime @default(now())
+
+  Event        Event  @relation(fields: [eventId], references: [id])
+  ImagePreview Image? @relation("ImagePreview", fields: [imagePreviewId], references: [id])
+  ImageContent Image? @relation("ImageContent", fields: [imageContentId], references: [id])
+}
+
+model Image {
+  id        String   @id @default(uuid())
+  url       String
+  createdAt DateTime @default(now())
+
+  ImagePreview EventImage[] @relation("ImagePreview")
+  ImageContent EventImage[] @relation("ImageContent")
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  eventId     String
+  userId      String
+  imageReview String
+  rating      Int // Rating between 1 and 5
+  comment     String?
+  createdAt   DateTime @default(now())
+
+  User  User  @relation(fields: [userId], references: [id])
+  Event Event @relation(fields: [eventId], references: [id])
+}
+
+model Ticket {
+  id         String     @id @default(uuid())
+  eventId    String
+  ticketType TicketRole @default(REGULAR)
+  price      Float
+  quantity   String
+
+  Event       Event         @relation(fields: [eventId], references: [id])
+  Transaction Transaction[]
+  User        User?         @relation(fields: [userId], references: [id])
+  userId      String?
+}
+
+model Voucher {
+  id              String     @id @default(uuid())
+  eventId         String
+  description     String
+  code            String     @unique
+  discountPercent Int
+  maxUses         Int
+  status          StatusRole @default(AVAILABLE)
+  validUntil      DateTime
+
+  event       Event         @relation(fields: [eventId], references: [id])
+  Transaction Transaction[]
+}
+
+model Discount {
+  id              String   @id @default(uuid())
+  discountPercent Int
+  validUntil      DateTime
+  eventId         String
+
+  Event Event @relation(fields: [eventId], references: [id])
+
+  Transaction Transaction[]
+}
+
+model Transaction {
+  id          String     @id @default(uuid())
+  userId      String
+  eventId     String
+  ticketId    String
+  voucherId   String?
+  discountId  String?
+  statusPaid  StatusPaid @default(PENDING)
+  totalPrice  Float // in IDR
+  totalTicket Int
+  createdAt   DateTime   @default(now())
+
+  User     User      @relation(fields: [userId], references: [id])
+  Event    Event     @relation(fields: [eventId], references: [id])
+  Ticket   Ticket    @relation(fields: [ticketId], references: [id])
+  Voucher  Voucher?  @relation(fields: [voucherId], references: [id])
+  Discount Discount? @relation(fields: [discountId], references: [id])
+}
