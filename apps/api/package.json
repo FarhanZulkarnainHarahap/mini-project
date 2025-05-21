@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx tsx --watch src/app.ts",
+    "build": "npx tsc",
+    "check-types": "npx tsc --noEmit",
+    "dev": "NODE_ENV=development npx tsx --watch src/app.ts",
+    "start": "npm run build && NODE_ENV=production node dist/app.js",
     "seed": "npx tsx prisma/seed.ts"
   },
   "keywords": [],
