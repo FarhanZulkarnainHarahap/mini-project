@@ -2,50 +2,31 @@ import { PrismaClient } from "../src/generated/prisma/index.js"; // Adjust the i
 
 const prisma = new PrismaClient();
 
-
 async function seed() {
   try {
     /* -------------------------------------------------------------------------- */
     /*                                 Delete Many                                */
     /* -------------------------------------------------------------------------- */
-    await prisma.user.deleteMany();
+
+    await prisma.eventImage.deleteMany();
+    await prisma.ticket.deleteMany();
     await prisma.event.deleteMany();
-    await prisma.category.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.image.deleteMany();
     /* -------------------------------------------------------------------------- */
     /*                               Create One User                              */
     /* -------------------------------------------------------------------------- */
-    const user = await prisma.user.create({
-      data: {
-        firstName: "John",
-        lastName: "Doe",
-        email: "Jhon@gmail.com", 
-        username: "johndoe", 
-        password: "jhondoe",
-        phoneNumber: "08123456789",
-        role: "ADMIN",
-      }    
-      })
-      console.log('✅ User created:', user);
-      /* -------------------------------------------------------------------------- */
-      /*                                Create Event                                */
-      /* -------------------------------------------------------------------------- */
 
-      
+    /* -------------------------------------------------------------------------- */
+    /*                                Create Event                                */
+    /* -------------------------------------------------------------------------- */
 
-      /* -------------------------------------------------------------------------- */
-      /*                              Create Categories                             */
-      /* -------------------------------------------------------------------------- */
-
-      const category1 = await prisma.category.create({
-        data: {
-          name: "THEATER",
-        },
-      });
-      console.log('✅ category created:', category1);
-
+    /* -------------------------------------------------------------------------- */
+    /*                              Create Categories                             */
+    /* -------------------------------------------------------------------------- */
   } catch (error) {
-    console.error('❌ Terjadi kesalahan saat seeding:', error);
-  } 
+    console.error("❌ Terjadi kesalahan saat seeding:", error);
+  }
 }
 
-seed()
+seed();

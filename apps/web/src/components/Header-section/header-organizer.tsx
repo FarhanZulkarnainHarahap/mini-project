@@ -16,9 +16,9 @@ export default function HeaderOrganizer() {
   const [showProfilePopup, setShowPorfilePopup] = useState(false);
 
   const navItems = [
-    { href: "/organizer", label: "Dashboard" },
-    { href: "/organizer/event", label: "Event" },
-    { href: "/organizer/transaction", label: "Transaction" },
+    { href: "/dashboard/organizer", label: "Dashboard" },
+    { href: "/dashboard/organizer/event", label: "Event" },
+    { href: "/dashboard/organizer/transaction", label: "Transaction" },
     {
       href: "#profile",
       label: (

@@ -127,6 +127,7 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   username: 'username',
   password: 'password',
+  referalCode: 'referalCode',
   phoneNumber: 'phoneNumber',
   role: 'role',
   createdAt: 'createdAt'
@@ -147,13 +148,6 @@ exports.Prisma.ReferralCodeScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
-exports.Prisma.CategoryScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.EventScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -162,14 +156,8 @@ exports.Prisma.EventScalarFieldEnum = {
   location: 'location',
   startDate: 'startDate',
   endDate: 'endDate',
-  createdAt: 'createdAt'
-};
-
-exports.Prisma.EventCategoryScalarFieldEnum = {
-  id: 'id',
-  eventId: 'eventId',
-  categoryId: 'categoryId',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  category: 'category'
 };
 
 exports.Prisma.EventImageScalarFieldEnum = {
@@ -178,6 +166,13 @@ exports.Prisma.EventImageScalarFieldEnum = {
   imagePreviewId: 'imagePreviewId',
   imageContentId: 'imageContentId',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.UserImageScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  url: 'url',
+  createAt: 'createAt'
 };
 
 exports.Prisma.ImageScalarFieldEnum = {
@@ -201,7 +196,9 @@ exports.Prisma.TicketScalarFieldEnum = {
   eventId: 'eventId',
   ticketType: 'ticketType',
   price: 'price',
-  quantity: 'quantity',
+  seat: 'seat',
+  createdAt: 'createdAt',
+  update: 'update',
   userId: 'userId'
 };
 
@@ -230,7 +227,7 @@ exports.Prisma.TransactionScalarFieldEnum = {
   ticketId: 'ticketId',
   voucherId: 'voucherId',
   discountId: 'discountId',
-  statusPaid: 'statusPaid',
+  status: 'status',
   totalPrice: 'totalPrice',
   totalTicket: 'totalTicket',
   createdAt: 'createdAt'
@@ -256,7 +253,8 @@ exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN'
 };
 
-exports.CategoryRole = exports.$Enums.CategoryRole = {
+exports.ListCategory = exports.$Enums.ListCategory = {
+  NONE: 'NONE',
   THEATER: 'THEATER',
   SPORTS: 'SPORTS',
   ACADEMY: 'ACADEMY',
@@ -264,19 +262,19 @@ exports.CategoryRole = exports.$Enums.CategoryRole = {
   TRAVEL: 'TRAVEL'
 };
 
-exports.TicketRole = exports.$Enums.TicketRole = {
+exports.TicketType = exports.$Enums.TicketType = {
   REGULAR: 'REGULAR',
   VIP: 'VIP',
   VVIP: 'VVIP'
 };
 
-exports.StatusRole = exports.$Enums.StatusRole = {
+exports.DiscountStatus = exports.$Enums.DiscountStatus = {
   AVAILABLE: 'AVAILABLE',
   REDEEMED: 'REDEEMED',
   EXPIRED: 'EXPIRED'
 };
 
-exports.StatusPaid = exports.$Enums.StatusPaid = {
+exports.TransactionStatus = exports.$Enums.TransactionStatus = {
   SUCCESS: 'SUCCESS',
   PENDING: 'PENDING',
   FAILED: 'FAILED'
@@ -286,10 +284,9 @@ exports.Prisma.ModelName = {
   User: 'User',
   Point: 'Point',
   ReferralCode: 'ReferralCode',
-  Category: 'Category',
   Event: 'Event',
-  EventCategory: 'EventCategory',
   EventImage: 'EventImage',
+  UserImage: 'UserImage',
   Image: 'Image',
   Review: 'Review',
   Ticket: 'Ticket',

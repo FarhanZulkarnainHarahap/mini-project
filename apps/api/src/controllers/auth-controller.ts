@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "../generated/prisma/index.js";
+import { PrismaClient, Role } from "../generated/prisma/index.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ZodError } from "zod";
@@ -30,6 +30,8 @@ export async function register(req: Request, res: Response) {
         username,
         password: hashedPassword,
         phoneNumber,
+        referalCode:
+          firstName.slice(0, 4) + Math.random().toString(36).slice(0, 6),
       },
     });
 
@@ -98,6 +100,7 @@ export async function login(req: Request, res: Response) {
         id: existingUser.id,
         firstName: existingUser.firstName,
         lastName: existingUser.lastName,
+        fullName: existingUser.firstName + existingUser.lastName,
         username: existingUser.username,
         email: existingUser.email,
         role: existingUser.role,

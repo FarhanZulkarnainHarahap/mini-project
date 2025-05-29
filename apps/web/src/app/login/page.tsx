@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { FcGoogle } from "react-icons/fc";
+import { FaTwitter } from "react-icons/fa";
 
 export default function LoginPage() {
   const [loginData, setLoginData] = useState({ username: "", password: "" });
@@ -11,7 +13,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:8000/api/v1/user", {
+      const res = await fetch("http://localhost:8000/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
@@ -33,44 +35,75 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen grid place-items-center">
-      <div className="bg-[#191717] p-5 rounded-md shadow-md w-96 h-[400px] text-white">
-        <h1 className="text-2xl font-bold text-center mb-5">Login</h1>
-        <form className="grid gap-4" onSubmit={handleSubmit}>
-          <div className="grid">
+    <main className="min-h-screen flex items-center justify-center bg-[#111]">
+      <div className="form-container bg-[#191717] p-8 rounded-xl shadow-lg w-full max-w-sm text-white">
+        <p className="title text-2xl font-bold mb-6 text-center">Login</p>
+        <form className="form grid gap-4" onSubmit={handleSubmit}>
+          <div className="input-group grid">
             <label htmlFor="username">Username</label>
             <input
-              className="border border-white"
               type="text"
               id="username"
+              name="username"
+              placeholder="Enter your username"
+              className="mt-1 p-2 rounded bg-transparent border border-white focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={loginData.username}
               onChange={(e) =>
-                setLoginData((prev) => {
-                  return { ...prev, username: e.target.value };
-                })
+                setLoginData({ ...loginData, username: e.target.value })
               }
             />
           </div>
 
-          <div className="grid">
+          <div className="input-group grid">
             <label htmlFor="password">Password</label>
             <input
-              className="border border-white"
               type="password"
               id="password"
+              name="password"
+              placeholder="Enter your password"
+              className="mt-1 p-2 rounded bg-transparent border border-white focus:outline-none focus:ring-2 focus:ring-gray-400"
               value={loginData.password}
               onChange={(e) =>
-                setLoginData((prev) => {
-                  return { ...prev, password: e.target.value };
-                })
+                setLoginData({ ...loginData, password: e.target.value })
               }
             />
+            <div className="forgot text-right text-sm mt-1">
+              <a href="#" className="text-gray-400 hover:text-white underline">
+                Forgot Password?
+              </a>
+            </div>
           </div>
 
-          <button className="bg-white text-black" type="submit">
-            Login
+          <button
+            type="submit"
+            className="sign bg-white text-black font-semibold py-2 rounded hover:bg-gray-200 transition"
+          >
+            Sign in
           </button>
         </form>
+
+        <div className="social-message flex items-center gap-2 my-6">
+          <div className="line flex-1 h-px bg-gray-500" />
+          <p className="message text-sm text-gray-400">
+            Login with social accounts
+          </p>
+          <div className="line flex-1 h-px bg-gray-500" />
+        </div>
+
+        <div className="social-icons flex justify-center gap-4">
+          <button
+            aria-label="Log in with Google"
+            className="icon bg-white p-2 rounded-full hover:shadow-lg"
+          >
+            <FcGoogle size={24} />
+          </button>
+          <button
+            aria-label="Log in with Twitter"
+            className="icon bg-white p-2 rounded-full hover:shadow-lg text-blue-500"
+          >
+            <FaTwitter size={24} />
+          </button>
+        </div>
       </div>
     </main>
   );
