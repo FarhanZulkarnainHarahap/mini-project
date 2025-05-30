@@ -36,12 +36,16 @@ export default function ProfileHeaderPopUp() {
 
   return (
     <section className="relative z-50">
+      {/* {currentUser ? (
+        <div></div>>
+      ) : ( */}
       <button
         onClick={() => setShowProfilePopup(!showProfilePopup)}
         className="p-2 hover:bg-gray-800 rounded-full transition"
       >
         <FaRegUser className="text-lg text-white" />
       </button>
+      {/* )} */}
 
       {showProfilePopup && (
         <div className="fixed top-0 right-0 h-screen w-full md:w-[350px] bg-[#1f1f1f]/90 backdrop-blur-md text-white shadow-2xl transition-all duration-300 ease-in-out p-6 z-[100] rounded-l-xl">
@@ -85,13 +89,13 @@ export default function ProfileHeaderPopUp() {
           ) : (
             <div className="flex flex-col space-y-4 items-center">
               <Link
-                href="/login"
+                href="/auth/login"
                 className="w-full text-center bg-gradient-to-r from-blue-500 to-blue-700 py-2 rounded-xl hover:opacity-90 transition"
               >
                 Sign In
               </Link>
               <Link
-                href="/register"
+                href="/auth/register"
                 className="w-full text-center bg-gradient-to-r from-green-500 to-green-700 py-2 rounded-xl hover:opacity-90 transition"
               >
                 Sign Up

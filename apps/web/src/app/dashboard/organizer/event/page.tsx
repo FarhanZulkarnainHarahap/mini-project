@@ -1,4 +1,4 @@
-import ShowAddNewEventSection from "@/components/organizerComponents/event-components/addTable";
+import ShowAddNewEventSection from "@/components/organizerComponents/event-components/popupaddnewevent";
 import { FaTrashCan } from "react-icons/fa6";
 import HeaderOrganizer from "@/components/Header-section/header-organizer";
 import ContentEventOrganizerSection from "@/components/organizerComponents/event-components/contentEvent";

@@ -31,7 +31,7 @@ export default function EventContentSection() {
 
   // Ambil page dan limit dari URL query, default ke 1 dan 2
   const pageParam = parseInt(searchParams.get("page") || "1");
-  const limitParam = parseInt(searchParams.get("limit") || "10");
+  const limitParam = parseInt(searchParams.get("limit") || "8");
 
   const [page, setPage] = useState(pageParam);
   const [limit, setLimit] = useState(limitParam);
@@ -100,7 +100,17 @@ export default function EventContentSection() {
                 <p>{selectedEvent.description}</p>
                 <div>
                   <p>
-                    {selectedEvent.startDate} - {selected}
+                    {new Date(selectedEvent.startDate).toLocaleDateString(
+                      "id-ID",
+                      { day: "numeric", month: "long", year: "numeric" }
+                    )}
+                  </p>
+                  <p>-</p>
+                  <p>
+                    {new Date(selectedEvent.endDate).toLocaleDateString(
+                      "id-ID",
+                      { day: "numeric", month: "long", year: "numeric" }
+                    )}
                   </p>
                 </div>
               </div>
