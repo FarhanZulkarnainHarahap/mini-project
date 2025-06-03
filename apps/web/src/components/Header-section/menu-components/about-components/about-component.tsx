@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 export default function AboutMenu() {
   const pathname = usePathname();
-  const isActive = pathname === "/about";
+  const isActive = pathname === "/dashboard/customer/about";
 
   return (
     <Link

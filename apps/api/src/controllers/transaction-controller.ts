@@ -11,81 +11,120 @@ const snap = new MidtransClient.Snap({
 
 export async function createTransaction(req: Request, res: Response) {
   try {
-    const { eventId, totalTicket, ticketId } = req.body;
+    const { eventId, ticketId, totalTicket, voucherId, discountId } = req.body;
     const userId = req.user.id;
+    const [event, ticket, voucher, discount] = await Promise.all([
+      prisma.event.findUnique({ where: { id: eventId } }),
+      prisma.ticket.findUnique({ where: { id: ticketId } }),
+      prisma.voucher.findUnique({ where: { id: voucherId } }),
+      prisma.discount.findUnique({ where: { id: discountId } }),
+    ]);
 
-    const event = await prisma.event.findUnique({ where: { id: eventId } });
+    if (!eventId || !ticketId || !totalTicket) {
+      res
+        .status(400)
+        .json({ message: "eventId, ticketId dan totalTicket wajib diisi" });
+      return;
+    }
+
     if (!event) {
-      res.status(404).json({ message: "Event not found" });
+      res.status(404).json({ message: "Event tidak ditemukan" });
       return;
     }
-
-    const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
     if (!ticket) {
-      res.status(404).json({ message: "ticket not found" });
+      res.status(404).json({ message: "Tiket tidak ditemukan" });
+      return;
+    }
+    if (ticket.seat < totalTicket) {
+      res.status(400).json({ message: "Kursi tidak mencukupi" });
       return;
     }
 
-    const ticketType = ticket.ticketType;
+    // Hitung harga awal
+    let totalPrice = ticket.price * totalTicket;
 
-    let totalPrice = 0;
+    // Apply voucher jika ada
+    let appliedVoucher = null;
+    if (voucherId) {
+      appliedVoucher = await prisma.voucher.findUnique({
+        where: { id: voucherId },
+      });
+      if (!appliedVoucher) {
+        res.status(404).json({ message: "Voucher tidak ditemukan" });
+        return;
+      }
 
-    if (ticketType === "REGULAR") {
-      return (totalPrice = ticket.price);
-    } else if (ticketType === "VIP") {
-      return (totalPrice = ticket.price);
-    } else if (ticketType === "VVIP") {
-      return (totalPrice = ticket.price);
+      // Misal diskon fixed amount
+      const totalPrice = appliedVoucher.discountPercent;
     }
 
-    const localId = uuid();
+    // Apply discount jika ada
+    let appliedDiscount = null;
+    if (discountId) {
+      appliedDiscount = await prisma.discount.findUnique({
+        where: { id: discountId },
+      });
+      if (!appliedDiscount)
+        return res.status(404).json({ message: "Diskon tidak ditemukan" });
+
+      // Misal diskon persentase
+      totalPrice *= 1 - appliedDiscount.discountPercent / 100;
+    }
+
+    // Tidak boleh negatif
+    if (totalPrice < 0) totalPrice = 0;
+
+    const orderId = uuid();
 
     await prisma.$transaction(async (tx) => {
-      // Our own transaction
       await tx.transaction.create({
         data: {
-          id: localId,
-          eventId,
+          id: orderId,
           userId,
+          eventId,
           ticketId,
+          voucherId,
+          discountId,
           totalTicket,
           totalPrice,
+          status: "PENDING",
         },
       });
 
       await tx.ticket.update({
         where: { id: ticketId },
-        data: { seat: { decrement: totalTicket } },
+        data: {
+          seat: { decrement: totalTicket },
+        },
       });
     });
 
-    // Midtrans transaction
     const midtransTransaction = await snap.createTransaction({
       transaction_details: {
-        order_id: localId,
-        gross_amount: totalPrice,
+        order_id: orderId,
+        gross_amount: Math.floor(totalPrice),
       },
       item_details: [
         {
-          id: event.id,
-          name: event.title,
+          id: ticket.id,
+          name: `${event.title} - ${ticket.ticketType}`,
           quantity: totalTicket,
           price: ticket.price,
         },
       ],
       customer_details: {
-        full_name: req.user.fullName,
+        first_name: req.user.firstName,
         email: req.user.email,
       },
     });
 
     res.status(201).json({
-      message: "Transaction Created",
+      message: "Transaksi berhasil dibuat",
       data: { midtransTransaction },
     });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to create transaction" });
+  } catch (err) {
+    console.error("createTransaction error:", err);
+    res.status(500).json({ message: "Gagal membuat transaksi" });
   }
 }
 

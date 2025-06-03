@@ -4,6 +4,8 @@ import {
   createOneEvents,
   getEventById,
   deleteEventById,
+  createOneReview,
+  getComment,
 } from "../controllers/event-controller";
 import { imageFields } from "../controllers/image-controller";
 import { fileUpload } from "../middleware/file-upload-middleware";
@@ -23,9 +25,14 @@ router
     ]),
     createOneEvents
   );
+
 router.route("/:eventId").get(getEventById).delete(
   verifyToken, // pastikan hanya yang berizin yang bisa hapus
   roleGuard("ORGANIZER"),
   deleteEventById
 );
+router
+  .route("/review")
+  .get(getComment)
+  .post(verifyToken, roleGuard("CUSTOMER"), createOneReview);
 export default router;

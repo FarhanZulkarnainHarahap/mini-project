@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 export default function EventMenu() {
   const pathname = usePathname();
-  const isActive = pathname === "/event";
+  const isActive = pathname === "/dashboard/customer/event";
 
   return (
     <Link

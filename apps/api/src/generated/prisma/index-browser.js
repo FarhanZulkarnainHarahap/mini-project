@@ -185,9 +185,8 @@ exports.Prisma.ReviewScalarFieldEnum = {
   id: 'id',
   eventId: 'eventId',
   userId: 'userId',
-  imageReview: 'imageReview',
   rating: 'rating',
-  comment: 'comment',
+  description: 'description',
   createdAt: 'createdAt'
 };
 
@@ -205,6 +204,7 @@ exports.Prisma.TicketScalarFieldEnum = {
 exports.Prisma.VoucherScalarFieldEnum = {
   id: 'id',
   eventId: 'eventId',
+  ticketId: 'ticketId',
   description: 'description',
   code: 'code',
   discountPercent: 'discountPercent',
@@ -217,7 +217,8 @@ exports.Prisma.DiscountScalarFieldEnum = {
   id: 'id',
   discountPercent: 'discountPercent',
   validUntil: 'validUntil',
-  eventId: 'eventId'
+  eventId: 'eventId',
+  ticketId: 'ticketId'
 };
 
 exports.Prisma.TransactionScalarFieldEnum = {
@@ -248,7 +249,7 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 exports.Role = exports.$Enums.Role = {
-  USER: 'USER',
+  CUSTOMER: 'CUSTOMER',
   ORGANIZER: 'ORGANIZER',
   ADMIN: 'ADMIN'
 };

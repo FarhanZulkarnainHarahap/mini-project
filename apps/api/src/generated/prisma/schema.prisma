@@ -15,7 +15,7 @@ datasource db {
 }
 
 enum Role {
-  USER
+  CUSTOMER
   ORGANIZER
   ADMIN
 }
@@ -56,7 +56,7 @@ model User {
   password    String
   referalCode String   @unique
   phoneNumber String?  @unique
-  role        Role     @default(USER)
+  role        Role     @default(CUSTOMER)
   createdAt   DateTime @default(now())
 
   Event        Event[]
@@ -88,23 +88,23 @@ model ReferralCode {
 }
 
 model Event {
-  id          String       @id @default(uuid())
+  id          String        @id @default(uuid())
   userId      String
   title       String
   description String
   location    String
   startDate   DateTime
   endDate     DateTime
-  createdAt   DateTime     @default(now())
-  category    ListCategory @default(NONE)
-
-  Voucher     Voucher[]
+  createdAt   DateTime      @default(now())
+  category    ListCategory  @default(NONE)
   Transaction Transaction[]
   Review      Review[]
   EventImage  EventImage[]
-  Discount    Discount[]
   Ticket      Ticket[]
-  User        User          @relation(fields: [userId], references: [id])
+
+  User     User       @relation(fields: [userId], references: [id])
+  Voucher  Voucher[]
+  Discount Discount[]
 }
 
 model EventImage {
@@ -139,15 +139,14 @@ model Image {
 
 model Review {
   id          String   @id @default(uuid())
-  eventId     String
-  userId      String
-  imageReview String
-  rating      Int // Rating between 1 and 5
-  comment     String?
+  eventId     String?
+  userId      String?
+  rating      Int? // Rating between 1 and 5
+  description String?
   createdAt   DateTime @default(now())
 
-  User  User  @relation(fields: [userId], references: [id])
-  Event Event @relation(fields: [eventId], references: [id])
+  User  User?  @relation(fields: [userId], references: [id])
+  Event Event? @relation(fields: [eventId], references: [id])
 }
 
 model Ticket {
@@ -160,23 +159,28 @@ model Ticket {
   update     DateTime   @updatedAt
   userId     String?
 
-  Event       Event         @relation(fields: [eventId], references: [id])
   Transaction Transaction[]
-  User        User?         @relation(fields: [userId], references: [id])
+  Discount    Discount[]
+
+  Event   Event     @relation(fields: [eventId], references: [id])
+  User    User?     @relation(fields: [userId], references: [id])
+  Voucher Voucher[]
 }
 
 model Voucher {
   id              String         @id @default(uuid())
   eventId         String
+  ticketId        String
   description     String
-  code            String         @unique
+  code            String?        @unique
   discountPercent Int
   maxUses         Int
   status          DiscountStatus @default(AVAILABLE)
   validUntil      DateTime
 
-  event       Event         @relation(fields: [eventId], references: [id])
+  Event       Event         @relation(fields: [eventId], references: [id])
   Transaction Transaction[]
+  Ticket      Ticket?       @relation(fields: [ticketId], references: [id])
 }
 
 model Discount {
@@ -184,10 +188,11 @@ model Discount {
   discountPercent Int
   validUntil      DateTime
   eventId         String
-
-  Event Event @relation(fields: [eventId], references: [id])
+  ticketId        String?
 
   Transaction Transaction[]
+  Event       Event         @relation(fields: [eventId], references: [id])
+  Ticket      Ticket?       @relation(fields: [ticketId], references: [id])
 }
 
 model Transaction {

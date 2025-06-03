@@ -1,6 +1,6 @@
 import Header from "@/components/Header-section/header";
 import EventContentSection from "@/components/home-components/content-event-components";
-import DiscountSection from "@/components/home-components/discount-coupont-components";
+import VoucherSection from "@/components/home-components/voucher-components";
 import EventHomeSection from "@/components/home-components/home-component";
 
 export default function HomePage() {
@@ -14,7 +14,7 @@ export default function HomePage() {
           </div>
           <EventHomeSection />
           <EventContentSection />d
-          <DiscountSection />
+          <VoucherSection />
           <div className="h-full">Ok</div>
         </div>
       </div>

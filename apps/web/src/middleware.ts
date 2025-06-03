@@ -7,14 +7,17 @@ export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname;
 
   // check kalau dia punya token bisa akses ke halaman token
-  if (!accessToken && pathname !== "/auth/login") {
-    return NextResponse.redirect(`${req.nextUrl.origin}/auth/login`);
-  } else if (!accessToken && pathname === "/auth/login") {
+
+  if (
+    (!accessToken && pathname === "/auth/login") ||
+    (!accessToken && pathname === "/auth/register")
+  ) {
     return NextResponse.next();
   }
 
   if (!accessToken)
     return NextResponse.redirect(`${req.nextUrl.origin}/auth/login`);
+
   const { payload } = await jwtVerify(
     accessToken,
     new TextEncoder().encode(process.env.JWT_SECRET)

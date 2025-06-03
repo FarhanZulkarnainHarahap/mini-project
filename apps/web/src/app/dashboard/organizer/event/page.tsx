@@ -1,4 +1,4 @@
-import ShowAddNewEventSection from "@/components/organizerComponents/event-components/popupaddnewevent";
+import AddNewEventSection from "@/components/organizerComponents/event-components/add-new-event";
 import { FaTrashCan } from "react-icons/fa6";
 import HeaderOrganizer from "@/components/Header-section/header-organizer";
 import ContentEventOrganizerSection from "@/components/organizerComponents/event-components/contentEvent";
@@ -16,7 +16,7 @@ export default function EventOrganizerPage() {
           <div className="grid items-start justify-items-end text-left bg-whit">
             <div className="grid grid-cols-2 gap-x-5">
               {/* Tombol Add */}
-              <ShowAddNewEventSection />
+              <AddNewEventSection />
               {/* Tombol Delete */}
               <div className="bg-red-500 w-fit p-2 rounded-md text-white grid grid-cols-[auto_1fr] place-items-center gap-x-3">
                 <FaTrashCan color="white" />

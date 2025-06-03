@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { coupons } from "@/app/data/coupon";
 
-export default function DiscountSection() {
+export default function VoucherSection() {
   const [claimed, setClaimed] = useState<string[]>([]);
 
   const handleClaim = (id: string) => {

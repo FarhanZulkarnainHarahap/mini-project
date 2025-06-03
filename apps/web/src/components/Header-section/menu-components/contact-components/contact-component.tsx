@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 export default function ContactMenu() {
   const pathname = usePathname();
-  const isActive = pathname === "/contact";
+  const isActive = pathname === "/dashboard/customer/contact";
 
   return (
     <section>

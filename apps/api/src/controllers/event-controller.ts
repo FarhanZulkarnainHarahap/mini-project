@@ -15,22 +15,25 @@ const prisma = new PrismaClient();
 export async function getAllEvents(req: Request, res: Response) {
   try {
     /* ------------------------------- pagination ------------------------------- */
+
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
+    const title = req.query.title as string;
 
-    const totalItems = await prisma.event.count();
-    const totalPages = Math.ceil(totalItems / limit);
-
-    const tickets = await prisma.ticket.findMany();
     const allEvents = await prisma.event.findMany({});
     const paginationEvents = await prisma.event.findMany({
+      where: { title: { contains: title, mode: "insensitive" } },
+
       skip: skip,
       take: +limit,
       include: {
         User: true,
         EventImage: { include: { ImagePreview: true, ImageContent: true } },
         Ticket: true,
+        Review: true,
+        Voucher: true,
+        Discount: true,
       },
     });
 
@@ -166,8 +169,8 @@ export async function createOneEvents(req: Request, res: Response) {
         },
       },
     });
-
-    res.status(201).json({ message: "Event was Created", data: events });
+    const resultEvent = JSON.stringify(events);
+    res.status(201).json({ message: "Event was Created", data: resultEvent });
     console.log("Created Event", events);
   } catch (error) {
     console.error(error);
@@ -263,26 +266,83 @@ export async function deleteEventById(req: Request, res: Response) {
   }
 }
 
-// create: ticketType.map((ticket) => ({
-//             ticketType: ticket.role,
-//             price: ticket.price,
-//             seat: ticket.seat,
-//           })),
+export async function createOneReview(req: Request, res: Response) {
+  try {
+    const { description, rating, eventId } = req.body;
+    const parsedRating = parseInt(rating);
+    const userId = req.user.id;
 
-// create: [
-//             {
-//               ticketType: TicketRole.REGULAR,
-//               price: tickets.reguler.price,
-//               seat: tickets.reguler.seat,
-//             },
-//             {
-//               ticketType: TicketRole.VIP,
-//               price: tickets.VIP.price,
-//               seat: tickets.VIP.seat,
-//             },
-//             {
-//               ticketType: TicketRole.VVIP,
-//               price: tickets.VVIP.price,
-//               seat: tickets.VVIP.seat,
-//             },
-//           ],
+    // Validasi minimal input
+    if (!userId || !eventId || !parsedRating) {
+      res.status(400).json({
+        message: "userId, eventId, and rating are required",
+      });
+      return;
+    }
+
+    // Validasi rating harus 1–5
+    if (parsedRating < 1 || parsedRating > 5) {
+      res.status(400).json({
+        message: "Rating must be between 1 and 5",
+      });
+      return;
+    }
+
+    // (Opsional) Cek jika user sudah review event ini
+    const existingReview = await prisma.review.findFirst({
+      where: {
+        userId,
+        eventId,
+      },
+    });
+
+    if (existingReview) {
+      res.status(400).json({
+        message: "You have already reviewed this event",
+      });
+      return;
+    }
+
+    // Buat review
+    const review = await prisma.review.create({
+      data: {
+        userId,
+        eventId,
+        rating: parsedRating,
+        description,
+      },
+      include: {
+        User: true, // jika ingin info user
+      },
+    });
+
+    res.status(201).json({
+      message: "Review created successfully",
+      data: review,
+    });
+  } catch (error) {
+    console.error("Create review error:", error);
+    res.status(500).json({
+      message: "Failed to create review",
+    });
+  }
+}
+export async function getComment(req: Request, res: Response) {
+  try {
+    const event = await prisma.event.findMany({
+      include: {
+        Review: {
+          include: {
+            User: true,
+          },
+        },
+      },
+    });
+    res.status(200).json({ data: event });
+  } catch (error) {
+    console.error("get review error:", error);
+    res.status(500).json({
+      message: "Failed to get review",
+    });
+  }
+}
